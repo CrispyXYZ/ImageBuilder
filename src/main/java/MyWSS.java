@@ -50,8 +50,9 @@ public class MyWSS extends WebSocketServer {
     public void onMessage(WebSocket ws, String msg) {
         try {
             JSONObject json = new JSONObject(msg);
-            if ("PlayerMessage".equals(json.getJSONObject("body").getString("eventName")) && "chat".equals(json.getJSONObject("body").getJSONObject("properties").getString("MessageType"))) {
-                String message = json.getJSONObject("body").getJSONObject("properties").getString("Message");
+            System.out.println("[DEBUG] Received message:"+msg);
+            if ("PlayerMessage".equals(json.getJSONObject("header").getString("eventName")) && "chat".equals(json.getJSONObject("body").getString("type"))) {
+                String message = json.getJSONObject("body").getString("message");
                 System.out.println("[Info] 收到玩家消息:" + message);
                 if (message.startsWith("set pos ")) {
                     String pos = message.substring(8);

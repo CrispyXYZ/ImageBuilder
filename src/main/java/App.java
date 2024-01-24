@@ -2,7 +2,7 @@ import java.util.Scanner;
 
 public class App {
     public static void main(String[] args) {
-        System.out.print("端口：");
+        System.out.print("port: ");
         Scanner scanner = new Scanner(System.in);
         String unparsed = scanner.nextLine();
         int port;
