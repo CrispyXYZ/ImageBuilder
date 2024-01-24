@@ -11,6 +11,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class MyWSS extends WebSocketServer {
@@ -19,23 +21,25 @@ public class MyWSS extends WebSocketServer {
     private final int[] orig = new int[3];
     private long delay = 2L;
     private int rotate = 0;
-    private boolean x=true, y, z=true;
-
+    private boolean x = true, y = false, z = true;
+    private static final Logger log = LoggerFactory.getLogger(MyWSS.class);
 
     public MyWSS(int port) {
         super(new InetSocketAddress(port));
         this.port = port;
+
+        System.out.printf("Logger enabled: I:%s, W:%s, E:%s, D:%s\n", log.isInfoEnabled(), log.isWarnEnabled(), log.isErrorEnabled(), log.isDebugEnabled());
     }
 
     private void execute(WebSocket ws, String cmd) {
         ws.send("{\"body\":{\"origin\":{\"type\":\"player\"},\"commandLine\":\"" + cmd +
                 "\",\"version\":1},\"header\":{\"requestId\":\"0ffae098-00ff-ffff-abbbbbbbbbdf3f44\",\"messagePurpose\":\"commandRequest\",\"version\":1,\"messageType\":\"commandRequest\"}}");
-        System.out.println("[Info] 命令已执行: /" + cmd);
+        log.info("命令已执行: /" + cmd);
     }
 
     @Override
     public void onOpen(WebSocket ws, ClientHandshake shake) {
-        System.out.println("[Info] 客户端已连接！!");
+        log.info("客户端已连接！!");
         ws.send("{\"body\": {\"eventName\": \"PlayerMessage\"},\"header\": {\"requestId\": \"0ffae098-00ff-ffff-abbbbbbbbbdf3344\",\"messagePurpose\": \"subscribe\",\"version\": 1,\"messageType\": \"commandRequest\"}}");
         execute(ws, "say 当前版本:v1.0.0");
         execute(ws, "say \n使用set pos X Y Z以设置原点\n使用set delay NUMBER以设置每条命令执行间隔(单位:ms,默认为2)\n使用rotate以旋转\n使用switch以切换平面\n使用draw FILE以绘图(1像素=1格)");
@@ -52,7 +56,7 @@ public class MyWSS extends WebSocketServer {
             JSONObject json = new JSONObject(msg);
             if ("PlayerMessage".equals(json.getJSONObject("header").getString("eventName")) && "chat".equals(json.getJSONObject("body").getString("type"))) {
                 String message = json.getJSONObject("body").getString("message");
-                System.out.println("[Info] 收到玩家消息:" + message);
+                log.info("收到玩家消息:" + message);
                 if (message.startsWith("set pos ")) {
                     String pos = message.substring(8);
                     String[] parsed = pos.split(" ");
@@ -111,27 +115,27 @@ public class MyWSS extends WebSocketServer {
                         } catch (IOException e) {
                             execute(ws, "say " + e);
                         } catch (InterruptedException e) {
-                            System.out.println("[Error] " + e);
+                            log.error(String.valueOf(e));
                         }
                     }).start();
                 }
             }
         } catch (JSONException e) {
-            System.out.println("[Warning] " + e);
+            log.warn(String.valueOf(e));
         }
     }
 
     @Override
     public void onError(WebSocket ws, Exception e) {
-        System.out.println("[Error] "+e);
+        log.error(String.valueOf(e));
     }
 
     @Override
     public void onStart() {
         try {
-            System.out.println("[Info] 已在"+ InetAddress.getLocalHost().getHostAddress() +":" + port + "建立WebSocket服务器！正在等待客户端......");
+            log.info("已在"+ InetAddress.getLocalHost().getHostAddress() +":" + port + "建立WebSocket服务器！正在等待客户端......");
         } catch (UnknownHostException e) {
-            System.out.println("[Warning] "+e);
+            log.warn(String.valueOf(e));
         }
     }
 }
