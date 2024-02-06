@@ -20,7 +20,7 @@ public class ConcreteChooser {
         double diff=Double.MAX_VALUE;
         RGB choice=new RGB(0);
         for(RGB concrete: new RGB[]{RED,GREEN,PURPLE,CYAN,SILVER,GRAY,PINK,LIME,YELLOW,LIGHT_BLUE,MAGENTA,ORANGE,BLACK,BROWN,BLUE,WHITE}) {
-            double diff2=rgb.getDifferent(concrete);
+            double diff2=rgb.getDifference(concrete);
             if(diff2<diff){
                 diff=diff2;
                 choice=concrete;

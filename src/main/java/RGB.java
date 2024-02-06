@@ -20,7 +20,18 @@ public class RGB {
         this.proto=(r<<16)|(g<<8)|b;
     }
 
-    public double getDifferent(RGB that){
-        return sqrt(pow(this.r-that.r,2)+pow(this.g-that.g,2)+pow(this.b-that.b,2));
+    public double getDifference(RGB that) {
+        int[] thisLab = rgbToLab(r, g, b);
+        int[] thatLab = rgbToLab(that.r, that.g, that.b);
+        return pow(thisLab[0]-thatLab[0], 2) + pow(thisLab[1]-thatLab[1], 2) + pow(thisLab[2]-thatLab[2], 2);
     }
+
+    private int[] rgbToLab(int r, int g, int b) {
+        return new int[] {
+                        (13933*r + 46871*g + 4732*b)  >> 16,
+                ((377 * (14503*r - 22218*g + 7714*b)) >> 24) + 128,
+                ((160 * (12773*r + 39695*g -52468*b)) >> 24) + 128
+        };
+    }
+
 }

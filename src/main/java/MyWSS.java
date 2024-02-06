@@ -47,7 +47,7 @@ public class MyWSS extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket ws, int p2, String p3, boolean p4) {
-        System.out.println("[Info] 客户端已掉线！");
+        log.info("客户端已掉线！");
     }
 
     @Override
